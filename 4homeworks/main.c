@@ -2,9 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 #define MAX 100
+
 char stack[MAX];
+char notation[MAX];
 int top = -1;
 int arrIdx = -1;
+int i = 0;
+int notIdx = -1;
+int stackInt[MAX];
+int topInt = -1;
 
 /*
 a+b => ab+
@@ -22,6 +28,12 @@ int isEmpty();
 char nextToken(char arr[]);
 int isp(char x);
 int icp(char x);
+char nextTokenNot(char arr[]);
+int pushint(int n);
+int popint();
+int oper(char ch);
+
+int calc(char notation[]);
 
 int main() {
 	char formula[100];
@@ -32,6 +44,8 @@ int main() {
 	while (x != NULL) {
 		if (x >= '0' && x <= '9') {
 			printf("%c ", x);
+			notation[i] = x;
+			i++;
 		} else if (x == ')') {
 			while (stack[top] != '(') {
 				pop();
@@ -51,6 +65,10 @@ int main() {
 		pop();
 	}
 
+	printf("\npostfix notation: %s", notation);
+
+	calc(notation);
+
 	return 0;
 }
 
@@ -59,7 +77,9 @@ char pop() {
 	char topelement;
 	topelement = stack[top];
 	if (stack[top] != '(') {
-	printf("%c", stack[top]);
+		printf("%c ", stack[top]);
+		notation[i] = stack[top];
+		i++;
 	}
 	top--;
 	return topelement;
@@ -117,6 +137,70 @@ int icp(char x) {
 	case '+':
 	case '-':
 		return 1;
+		break;
+	default:
+		break;
+	}
+}
+
+int calc(char notation[]) {
+	char x;
+	int n;
+
+	x = nextTokenNot(notation);
+	while (x != NULL) {
+		if (x >= '0' && x<='9') {
+			n = atoi(x);
+			pushint(n);
+		} else {
+			oper(x);
+		}
+	}
+
+	printf("\nResult: %d", stackInt[0]);
+
+	return 0;
+}
+
+char nextTokenNot(char arr[]) {
+	notIdx++;
+	return arr[notIdx];
+}
+
+int popint() {
+	isEmpty();
+	int topelement;
+	topelement = stack[top];
+	top--;
+	return topelement;
+}
+
+int pushint(int c) {
+	isFull();
+	topInt++;
+	stackInt[topInt] = c;
+	return 1;
+}
+
+int oper(char ch) {
+	int result;
+	switch (ch)
+	{
+	case '+':
+		result = popint() + popint();
+		pushint(result);
+		break;
+	case '-':
+		result = popint() - popint();
+		pushint(result);
+		break;
+	case '*':
+		result = popint() * popint();
+		pushint(result);
+		break;
+	case '/':
+		result = popint() / popint();
+		pushint(result);
 		break;
 	default:
 		break;
