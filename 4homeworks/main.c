@@ -12,15 +12,6 @@ int notIdx = -1;
 int stackInt[MAX];
 int topInt = -1;
 
-/*
-a+b => ab+
-a+b*c => abc*+
-a*b+c => ab*c+
-(a+b)*(c+d) => ab+cd+*
-a+b+c+d =>ab+c+d+
-(a+b)*(c-d/e) => ab+cde/-*
-*/
-
 char pop();
 int push(char);
 int isFull();
@@ -150,11 +141,12 @@ int calc(char notation[]) {
 	x = nextTokenNot(notation);
 	while (x != NULL) {
 		if (x >= '0' && x<='9') {
-			n = atoi(x);
+			n = x - '0';
 			pushint(n);
 		} else {
 			oper(x);
 		}
+		x = nextTokenNot(notation);
 	}
 
 	printf("\nResult: %d", stackInt[0]);
@@ -169,10 +161,10 @@ char nextTokenNot(char arr[]) {
 
 int popint() {
 	isEmpty();
-	int topelement;
-	topelement = stack[top];
-	top--;
-	return topelement;
+	int topelem;
+	topelem = stackInt[topInt];
+	topInt--;
+	return topelem;
 }
 
 int pushint(int c) {
@@ -184,22 +176,25 @@ int pushint(int c) {
 
 int oper(char ch) {
 	int result;
+	int a, b;
+	a = popint();
+	b = popint();
 	switch (ch)
 	{
 	case '+':
-		result = popint() + popint();
+		result = b + a;
 		pushint(result);
 		break;
 	case '-':
-		result = popint() - popint();
+		result = b - a;
 		pushint(result);
 		break;
 	case '*':
-		result = popint() * popint();
+		result = b * a;
 		pushint(result);
 		break;
 	case '/':
-		result = popint() / popint();
+		result = b / a;
 		pushint(result);
 		break;
 	default:
